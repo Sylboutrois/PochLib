@@ -1,0 +1,112 @@
+/* styles.css */
+.quicksand-custom {
+  font-family: "Quicksand", sans-serif;
+  font-weight: 400; /* Ajustez le poids si nécessaire */
+  font-style: normal;
+}
+#addBookButton {
+  display: block; /* Permet au bouton de s'afficher comme un bloc */
+  margin: 20px auto; /* Centrer le bouton avec auto pour les marges gauche et droite */
+  padding: 10px 20px; /* Espacement interne du bouton */
+  font-size: 16px; /* Taille de la police */
+  background-color: #4d9189; /* Couleur de fond */
+  color: white; /* Couleur du texte */
+  border: none; /* Pas de bordure par défaut */
+  border-radius: 5px; /* Coins arrondis */
+  cursor: pointer; /* Curseur pointeur */
+  transition: background-color 0.3s; /* Transition de la couleur de fond */
+}
+
+#addBookButton:hover {
+  background-color: #2980b9; /* Couleur de fond au survol */
+}
+
+body {
+  font-family: "Quicksand", sans-serif; /* Police de caractères */
+  background-color: #f4f4f4; /* Couleur de fond de la page */
+  margin: 0; /* Pas de marge */
+  padding: 0; /* Pas de remplissage */
+  text-align: center; /* Centre tout le texte */
+}
+
+.title {
+  display: inline-block; /* Affiche le titre comme un bloc en ligne */
+  background-color: #eef0f4; /* Couleur de fond du cadre */
+  padding: 10px 20px; /* Espacement autour du texte */
+  border: 2px solid #d0d3da; /* Bordure principale */
+  border-right: 4px solid #b0b3ba; /* Bordure droite plus foncée pour effet 3D */
+  border-bottom: 4px solid #b0b3ba; /* Bordure inférieure plus foncée pour effet 3D */
+  border-radius: 5px; /* Coins légèrement arrondis */
+  margin: 20px 0; /* Espacement en haut et en bas du titre */
+  font-size: 2rem; /* Taille du texte */
+  width: 100%; /* Largeur du cadre */
+  box-sizing: border-box; /* Inclut le padding et la bordure dans la largeur totale */
+}
+
+
+/* Style pour le formulaire */
+#bookForm {
+  margin-top: 20px;
+  text-align: left; /* Aligne le formulaire à gauche */
+  display: flex;
+  flex-direction: column; /* Affiche les champs les uns sous les autres */
+  max-width: 90%; /* Limite la largeur du formulaire */
+  margin-left: auto; /* Pas de marge à gauche pour l'aligner totalement à gauche */
+    margin-right: auto; /* Marge automatique à droite pour le maintenir à gauche */
+}
+
+/* Style pour les champs de saisie */
+#bookForm input {
+  margin: 10px 0;
+  padding: 5px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  width: 100%; /* Prend toute la largeur disponible */
+}
+
+/* Style commun pour les boutons du formulaire */
+.form-button {
+  margin-top: 10px;
+  padding: 10px 20px;
+  font-size: 16px;
+  width: 200px; /* Les boutons prennent toute la largeur du formulaire */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  align-self: flex-start;
+}
+
+/* Couleur spécifique pour le bouton "Rechercher" */
+#searchButton {
+  background-color: #4d9189;
+}
+
+#searchButton:hover {
+  background-color: #1c8a35;
+}
+
+/* Couleur spécifique pour le bouton "Annuler" */
+#cancelButton {
+  background-color: #e4594c;
+}
+
+#cancelButton:hover {
+  background-color: #c13d32;
+}
+#results {
+  display: flex; /* Utiliser flex pour aligner les livres */
+  flex-wrap: wrap; /* Permettre aux livres de passer à la ligne suivante */
+  justify-content: flex-start; /* Alignement à gauche */
+  gap: 20px; /* Espacement entre les livres */
+  margin-top: 20px; /* Espace au-dessus des résultats */
+}
+
+#results > div {
+  border: 1px solid #ccc; /* Bordure pour chaque livre */
+  padding: 10px; /* Espace interne */
+  width: calc(40% - 20px); /* Largeur de chaque livre (50% - espacement) */
+  box-sizing: border-box; /* Inclure le padding et la bordure dans la largeur */
+}
