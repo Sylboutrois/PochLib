@@ -1,0 +1,110 @@
+// Variables
+$font-family: "Quicksand", sans-serif;
+$main-bg-color: #f4f4f4;
+$title-bg-color: #eef0f4;
+$border-color: #d0d3da;
+$border-dark-color: #b0b3ba;
+$button-bg-color: #4d9189;
+$button-hover-color: #2980b9;
+$cancel-btn-bg-color: #e4594c;
+$cancel-btn-hover-color: #c13d32;
+$search-btn-hover-color: #1c8a35;
+$card-border-color: #ccc;
+
+// Mixins
+@mixin button-style($bg-color, $hover-color) {
+  background-color: $bg-color;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: $hover-color;
+  }
+}
+
+// Global styles
+body {
+  font-family: $font-family;
+  background-color: $main-bg-color;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+}
+
+// Title styles
+.title {
+  display: inline-block;
+  background-color: $title-bg-color;
+  padding: 10px 20px;
+  border: 2px solid $border-color;
+  border-right: 4px solid $border-dark-color;
+  border-bottom: 4px solid $border-dark-color;
+  border-radius: 5px;
+  margin: 20px 0;
+  font-size: 2rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+// Add Book Button
+#addBookButton {
+  display: block;
+  margin: 20px auto;
+  padding: 10px 20px;
+  font-size: 16px;
+  @include button-style($button-bg-color, $button-hover-color);
+}
+
+// Form styles
+#bookForm {
+  margin-top: 20px;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  max-width: 90%;
+  margin: 0 auto;
+
+  input {
+    margin: 10px 0;
+    padding: 5px;
+    font-size: 14px;
+    border: 1px solid $card-border-color;
+    border-radius: 3px;
+    width: 100%;
+  }
+
+  .form-button {
+    margin-top: 10px;
+    padding: 10px 20px;
+    font-size: 16px;
+    width: 200px;
+    align-self: flex-start;
+  }
+
+  #searchButton {
+    @include button-style($button-bg-color, $search-btn-hover-color);
+  }
+
+  #cancelButton {
+    @include button-style($cancel-btn-bg-color, $cancel-btn-hover-color);
+  }
+}
+
+// Results section
+#results {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 20px;
+  margin-top: 20px;
+
+  > div {
+    border: 1px solid $card-border-color;
+    padding: 10px;
+    width: calc(40% - 20px);
+    box-sizing: border-box;
+  }
+}

@@ -10,6 +10,9 @@ document.addEventListener("DOMContentLoaded", () => {
     // Sélection de l'élément parent où insérer le bouton (ici le div avec l'id myBooks)
     const myBooksDiv = document.getElementById("myBooks");
     
+// *** Charger les livres de sessionStorage au chargement de la page ***
+loadPochListFromSession();
+
     // Ajout du bouton à la page, juste avant la balise <hr>
     myBooksDiv.insertBefore(addBookButton, myBooksDiv.querySelector("hr"));
     
@@ -89,7 +92,45 @@ document.addEventListener("DOMContentLoaded", () => {
       }
   });
 });
+// *** Fonction pour charger les livres de la sessionStorage et les afficher dans la poch'liste ***
+function loadPochListFromSession(imageUrl) {
+    const storedBooks = JSON.parse(sessionStorage.getItem("pochListBooks")) || [];
+    
+    if (storedBooks.length > 0) {
+        const pochListSection = document.getElementById("pochList") || createPochListSection();
 
+        storedBooks.forEach(book => {
+            const pochListDiv = document.createElement("div");
+            pochListDiv.className = "poch-list-item";
+            pochListDiv.dataset.title = book.title;
+            pochListDiv.style.display = "flex";
+            pochListDiv.style.alignItems = "center";
+
+            const shortDescription = book.description.length > 100 ? book.description.substring(0, 100) + "..." : book.description;
+
+            pochListDiv.innerHTML = `
+                <img src="${imageUrl}" alt="Image du livre" style="width: 50px; margin-right: 10px;">
+                <div>
+                    <h3>${book.title}</h3>
+                    <p>Auteur : ${book.author}</p>
+                    <p>Description : ${shortDescription}</p>
+                    <p>ID : ${book.id}</p>
+                </div>
+                <img src="C:/Users/sylva/Downloads/Projet 6/trash-solid.svg" alt="Retirer" class="remove-icon" style="width: 20px; cursor: pointer; margin-left: 10px;">
+            `;
+
+            const removeIcon = pochListDiv.querySelector(".remove-icon");
+            removeIcon.addEventListener("click", () => {
+                pochListDiv.remove(); // Supprimer le livre de la poch'liste
+
+                const updatedBooks = storedBooks.filter(storedBook => storedBook.id !== book.id);
+                sessionStorage.setItem("pochListBooks", JSON.stringify(updatedBooks));
+            });
+
+            pochListSection.appendChild(pochListDiv);
+        });
+    }
+}
 // Fonction pour rechercher des livres via l'API Google Books
 function searchBooks(title, author) {
   const query = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(title)}+inauthor:${encodeURIComponent(author)}`;
@@ -111,16 +152,26 @@ function searchBooks(title, author) {
       });
 }
 
+// Fonction pour initialiser l'icône de bookmark en fonction de l'état du livre dans la Poch'List
+function initializeBookmarkIcon(bookId, bookmarkIcon) {
+    const storedBooks = getStoredBooks();
+    const isBookmarked = storedBooks.some(book => book.id === bookId);
+    
+    if (isBookmarked) {
+        bookmarkIcon.src = "C:/Users/sylva/Downloads/Projet 6/bookmark-solid.svg";
+    } else {
+        bookmarkIcon.src = "C:/Users/sylva/Downloads/Projet 6/bookmark_icon.svg";
+    }
+}
+
 // Fonction pour afficher les résultats de la recherche
 function displayResults(books) {
-    // Création de l'élément de titre des résultats
     const resultTitle = document.createElement("h2");
     resultTitle.textContent = "Résultats de recherche";
     resultTitle.style.textAlign = "center";
     resultTitle.style.marginTop = "20px";
     resultTitle.className = "result-title";
 
-    // Crée ou remplace la section des résultats
     let resultsDiv = document.getElementById("results");
     if (resultsDiv) {
         resultsDiv.remove();
@@ -143,7 +194,6 @@ function displayResults(books) {
             bookInfo.style.boxSizing = "border-box";
             bookInfo.style.position = "relative";
 
-            // Récupération des données
             const bookId = book.id;
             const title = book.volumeInfo.title || "Titre manquant";
             const authors = book.volumeInfo.authors || ["Auteur inconnu"];
@@ -152,7 +202,6 @@ function displayResults(books) {
             const descriptionShort = description.length > 200 ? description.substring(0, 200) + "..." : description;
             const imageUrl = book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.thumbnail : "images/unavailable.png";
 
-            // Création des éléments pour chaque livre
             const titleElement = document.createElement("h3");
             titleElement.textContent = title;
 
@@ -173,7 +222,6 @@ function displayResults(books) {
             imageElement.style.marginRight = "10px";
 
             const bookmarkIcon = document.createElement("img");
-            bookmarkIcon.src = "C:/Users/sylva/Downloads/Projet 6/bookmark_icon.svg";
             bookmarkIcon.alt = "Ajouter à la poch'liste";
             bookmarkIcon.style.width = "20px";
             bookmarkIcon.style.cursor = "pointer";
@@ -181,8 +229,11 @@ function displayResults(books) {
             bookmarkIcon.style.top = "10px";
             bookmarkIcon.style.right = "10px";
 
+            // Initialise l'icône de bookmark en fonction de l'état dans la Poch'List
+            initializeBookmarkIcon(bookId, bookmarkIcon);
+
             bookmarkIcon.addEventListener("click", () => {
-                togglePochList(bookInfo, title, author, imageUrl,description,bookId, bookmarkIcon);
+                togglePochList(bookInfo, title, author, imageUrl, description, bookId, bookmarkIcon);
             });
 
             // Assemblage des éléments
@@ -196,16 +247,13 @@ function displayResults(books) {
             resultsDiv.appendChild(bookInfo);
         });
     } else {
-        // Aucun livre trouvé
         resultsDiv.textContent = "Aucun livre n’a été trouvé.";
-        resultsDiv.style.textAlign = "center"; // Centrer le texte pour un meilleur affichage
+        resultsDiv.style.textAlign = "center";
     }
 
-    // Sélection de l'élément "Ma poch'liste" pour insérer les résultats au-dessus
     const pochListTitle = document.querySelector("#content h2");
     pochListTitle.parentNode.insertBefore(resultTitle, pochListTitle);
     pochListTitle.parentNode.insertBefore(resultsDiv, resultTitle.nextSibling);
-    
 }
 
 // Fonction pour supprimer les résultats de recherche
@@ -223,65 +271,115 @@ function removeSearchResults() {
     }
 }
 
+// Fonction pour synchroniser la liste des livres dans sessionStorage
+function updateSessionStorage(books) {
+    sessionStorage.setItem("pochListBooks", JSON.stringify(books));
+}
+
+// Fonction pour charger la liste des livres depuis sessionStorage
+function getStoredBooks() {
+    return JSON.parse(sessionStorage.getItem("pochListBooks")) || [];
+}
+
 // Fonction pour ajouter/retirer un livre à la poch'liste
-function togglePochList(bookInfo, title, author, imageUrl,description,bookId, bookmarkIcon) {
+function togglePochList(bookInfo, title, author, imageUrl, description, bookId, bookmarkIcon) {
     const isBookmarked = bookmarkIcon.src.includes("bookmark-solid.svg");
     const pochListSection = document.getElementById("pochList") || createPochListSection();
-    const bookIdentifiant = bookId; // Assurez-vous que l'identifiant est bien stocké dans le dataset
-    const storedBooks = JSON.parse(sessionStorage.getItem("pochListBooks")) || [];
+    const bookIdentifiant = bookId;
+    let storedBooks = getStoredBooks();
+
     if (!isBookmarked) {
         if (storedBooks.some(book => book.id === bookIdentifiant)) {
-            alert("Vous ne pouvez ajouter deux fois le même livre."); // *** Message d'alerte ***
-            return; // *** Sortir de la fonction si le livre est déjà ajouté ***
+            alert("Vous ne pouvez ajouter deux fois le même livre.");
+            return;
         }
-        // Modifier l'icône pour "bookmark-solid.svg"
+
+        // Modifier l'icône pour indiquer que le livre est dans la Poch'List
         bookmarkIcon.src = "C:/Users/sylva/Downloads/Projet 6/bookmark-solid.svg";
 
         // Ajouter le livre à la poch'liste
         const pochListDiv = document.createElement("div");
         pochListDiv.className = "poch-list-item";
-        pochListDiv.dataset.title = title; // Stocker le titre pour identifier le livre
+        pochListDiv.dataset.title = title;
         pochListDiv.style.display = "flex";
         pochListDiv.style.alignItems = "center";
 
-         // Limiter la description à 100 caractères
         const shortDescription = description.length > 100 ? description.substring(0, 100) + "..." : description;
 
         pochListDiv.innerHTML = `
             <img src="${imageUrl}" alt="Image du livre" style="width: 50px; margin-right: 10px;">
-             <div>
+            <div>
                 <h3>${title}</h3>
                 <p>Auteur : ${author}</p>
                 <p>Description : ${shortDescription}</p>
-               <p>Identifiant : ${bookId}</p>
+                <p>Identifiant : ${bookId}</p>
             </div>
             <img src="C:/Users/sylva/Downloads/Projet 6/trash-solid.svg" alt="Retirer" class="remove-icon" style="width: 15px; cursor: pointer; margin-left: 10px;">
         `;
 
-        // Création du bouton "Retirer"
-    
+        // Événement de suppression
         const removeIcon = pochListDiv.querySelector(".remove-icon");
         removeIcon.addEventListener("click", () => {
-            pochListDiv.remove(); // *** Supprimer le livre de la poch'liste ***
-            bookmarkIcon.src = "C:/Users/sylva/Downloads/Projet 6/bookmark_icon.svg"; // *** Remettre l'icône originale ***
-            const updatedBooks = storedBooks.filter(book => book.id !== bookId);
-            sessionStorage.setItem("pochListBooks", JSON.stringify(updatedBooks));
+            pochListDiv.remove();
+            bookmarkIcon.src = "C:/Users/sylva/Downloads/Projet 6/bookmark_icon.svg";
+            storedBooks = getStoredBooks().filter(book => book.id !== bookIdentifiant);
+            updateSessionStorage(storedBooks);
         });
 
         pochListSection.appendChild(pochListDiv);
-        storedBooks.push({ id: bookId, title, author, description }); // Ajouter le livre à la liste stockée
-        sessionStorage.setItem("pochListBooks", JSON.stringify(storedBooks));
+        storedBooks.push({ id: bookId, title, author, description, imageUrl }); // Ajouter l'URL de l'image
+        updateSessionStorage(storedBooks);
     } else {
-        // Revenir à l'icône "bookmark_icon.svg"
         bookmarkIcon.src = "C:/Users/sylva/Downloads/Projet 6/bookmark_icon.svg";
-
-        // Retirer le livre de la poch'liste
         const pochListDiv = Array.from(pochListSection.children).find(div => div.dataset.title === title);
         if (pochListDiv) {
             pochListDiv.remove();
+            storedBooks = getStoredBooks().filter(book => book.id !== bookIdentifiant);
+            updateSessionStorage(storedBooks);
         }
     }
 }
+
+// Fonction pour charger les livres de la sessionStorage et les afficher dans la poch'liste
+function loadPochListFromSession() {
+    const storedBooks = getStoredBooks();
+    
+    if (storedBooks.length > 0) {
+        const pochListSection = document.getElementById("pochList") || createPochListSection();
+
+        storedBooks.forEach(book => {
+            const pochListDiv = document.createElement("div");
+            pochListDiv.className = "poch-list-item";
+            pochListDiv.dataset.title = book.title;
+            pochListDiv.style.display = "flex";
+            pochListDiv.style.alignItems = "center";
+
+            const shortDescription = book.description.length > 100 ? book.description.substring(0, 100) + "..." : book.description;
+
+            pochListDiv.innerHTML = `
+                <img src="${book.imageUrl}" alt="Image du livre" style="width: 50px; margin-right: 10px;">
+                <div>
+                    <h3>${book.title}</h3>
+                    <p>Auteur : ${book.author}</p>
+                    <p>Description : ${shortDescription}</p>
+                    <p>ID : ${book.id}</p>
+                </div>
+                <img src="C:/Users/sylva/Downloads/Projet 6/trash-solid.svg" alt="Retirer" class="remove-icon" style="width: 20px; cursor: pointer; margin-left: 10px;">
+            `;
+
+            const removeIcon = pochListDiv.querySelector(".remove-icon");
+            removeIcon.addEventListener("click", () => {
+                pochListDiv.remove();
+                const updatedBooks = getStoredBooks().filter(storedBook => storedBook.id !== book.id);
+                updateSessionStorage(updatedBooks);
+            });
+
+            pochListSection.appendChild(pochListDiv);
+        });
+    }
+}
+
+
 
 // Fonction pour créer la section de la poch'liste si elle n'existe pas
 function createPochListSection() {
