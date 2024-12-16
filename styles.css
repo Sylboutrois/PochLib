@@ -82,16 +82,31 @@ body {
   background-color: #c13d32;
 }
 
-#results {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-start;
+.results-container, #results,
+#pochList {
+  display: grid;
   gap: 20px;
-  margin-top: 20px;
+  justify-content: center;
+  padding: 10px;
+  grid-template-columns: 1fr;
 }
-#results > div {
+@media screen and (min-width: 768px) {
+  .results-container, #results,
+  #pochList {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media screen and (min-width: 1024px) {
+  .results-container, #results,
+  #pochList {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.results-container > div, #results > div,
+#pochList > div {
   border: 1px solid #ccc;
   padding: 10px;
-  width: calc(40% - 20px);
   box-sizing: border-box;
+  text-align: center;
 }/*# sourceMappingURL=styles.css.map */

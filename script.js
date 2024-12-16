@@ -116,7 +116,7 @@ function loadPochListFromSession(imageUrl) {
                     <p>Description : ${shortDescription}</p>
                     <p>ID : ${book.id}</p>
                 </div>
-                <img src="C:/Users/sylva/Downloads/Projet 6/trash-solid.svg" alt="Retirer" class="remove-icon" style="width: 20px; cursor: pointer; margin-left: 10px;">
+                <img src="images/trash-solid.svg" alt="Retirer" class="remove-icon" style="width: 20px; cursor: pointer; margin-left: 10px;">
             `;
 
             const removeIcon = pochListDiv.querySelector(".remove-icon");
@@ -158,9 +158,9 @@ function initializeBookmarkIcon(bookId, bookmarkIcon) {
     const isBookmarked = storedBooks.some(book => book.id === bookId);
     
     if (isBookmarked) {
-        bookmarkIcon.src = "C:/Users/sylva/Downloads/Projet 6/bookmark-solid.svg";
+        bookmarkIcon.src = "images/bookmark-solid.svg";
     } else {
-        bookmarkIcon.src = "C:/Users/sylva/Downloads/Projet 6/bookmark_icon.svg";
+        bookmarkIcon.src = "images/bookmark_icon.svg";
     }
 }
 
@@ -180,17 +180,15 @@ function displayResults(books) {
     resultsDiv = document.createElement("div");
     resultsDiv.id = "results";
     resultsDiv.style.marginTop = "10px";
-    resultsDiv.style.display = "flex";
-    resultsDiv.style.flexWrap = "wrap";
+    resultsDiv.style.display = "grid"; // Grille pour respecter le CSS
     resultsDiv.style.gap = "20px";
-    resultsDiv.style.justifyContent = "flex-start";
 
     if (books && books.length > 0) {
         books.forEach(book => {
             const bookInfo = document.createElement("div");
             bookInfo.style.border = "1px solid #ccc";
             bookInfo.style.padding = "10px";
-            bookInfo.style.width = "calc(50% - 20px)";
+            bookInfo.style.width = "100%";
             bookInfo.style.boxSizing = "border-box";
             bookInfo.style.position = "relative";
 
@@ -295,7 +293,7 @@ function togglePochList(bookInfo, title, author, imageUrl, description, bookId, 
         }
 
         // Modifier l'icône pour indiquer que le livre est dans la Poch'List
-        bookmarkIcon.src = "C:/Users/sylva/Downloads/Projet 6/bookmark-solid.svg";
+        bookmarkIcon.src = "images/bookmark-solid.svg";
 
         // Ajouter le livre à la poch'liste
         const pochListDiv = document.createElement("div");
@@ -314,14 +312,14 @@ function togglePochList(bookInfo, title, author, imageUrl, description, bookId, 
                 <p>Description : ${shortDescription}</p>
                 <p>Identifiant : ${bookId}</p>
             </div>
-            <img src="C:/Users/sylva/Downloads/Projet 6/trash-solid.svg" alt="Retirer" class="remove-icon" style="width: 15px; cursor: pointer; margin-left: 10px;">
+            <img src="images/trash-solid.svg" alt="Retirer" class="remove-icon" style="width: 15px; cursor: pointer; margin-left: 10px;">
         `;
 
         // Événement de suppression
         const removeIcon = pochListDiv.querySelector(".remove-icon");
         removeIcon.addEventListener("click", () => {
             pochListDiv.remove();
-            bookmarkIcon.src = "C:/Users/sylva/Downloads/Projet 6/bookmark_icon.svg";
+            bookmarkIcon.src = "images/bookmark_icon.svg";
             storedBooks = getStoredBooks().filter(book => book.id !== bookIdentifiant);
             updateSessionStorage(storedBooks);
         });
@@ -330,7 +328,7 @@ function togglePochList(bookInfo, title, author, imageUrl, description, bookId, 
         storedBooks.push({ id: bookId, title, author, description, imageUrl }); // Ajouter l'URL de l'image
         updateSessionStorage(storedBooks);
     } else {
-        bookmarkIcon.src = "C:/Users/sylva/Downloads/Projet 6/bookmark_icon.svg";
+        bookmarkIcon.src = "images/bookmark_icon.svg";
         const pochListDiv = Array.from(pochListSection.children).find(div => div.dataset.title === title);
         if (pochListDiv) {
             pochListDiv.remove();
@@ -364,7 +362,7 @@ function loadPochListFromSession() {
                     <p>Description : ${shortDescription}</p>
                     <p>ID : ${book.id}</p>
                 </div>
-                <img src="C:/Users/sylva/Downloads/Projet 6/trash-solid.svg" alt="Retirer" class="remove-icon" style="width: 20px; cursor: pointer; margin-left: 10px;">
+                <img src="images/trash-solid.svg" alt="Retirer" class="remove-icon" style="width: 20px; cursor: pointer; margin-left: 10px;">
             `;
 
             const removeIcon = pochListDiv.querySelector(".remove-icon");
@@ -385,6 +383,7 @@ function loadPochListFromSession() {
 function createPochListSection() {
     const pochListSection = document.createElement("div");
     pochListSection.id = "pochList";
+    pochListSection.classList.add("results-container");
     document.getElementById("myBooks").appendChild(pochListSection);
     return pochListSection;
 }
